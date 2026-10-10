@@ -1,3 +1,5 @@
+import math
+
 MARKERS = {
     "glucose_fasting": {
         "canonical_unit": "mg/dl",  # standard unit for the marker
@@ -71,3 +73,23 @@ ALIAS_TO_MARKER = {
     for key, info in MARKERS.items()  # enter the outer dict
     for alias in info["aliases"]  # enter the aliases set
 }
+
+
+def normalize_name(name):
+    return name.lower().strip()  # normalize the input to avoid error
+
+
+def find_marker(name):
+    return ALIAS_TO_MARKER.get(normalize_name(name))  # get the marker name
+
+
+def parse_value(raw):
+    try:
+        value = float(raw.split().replace(",", "."))
+    except ValueError:
+        return None
+    return value if math.isfinite(value) else None
+
+
+# if __name__ == "__main__":
+#     print(normalized_name(input("Marker: ")))

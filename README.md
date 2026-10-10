@@ -16,4 +16,5 @@ with an evaluation suite that tests whether the model abstains when data is miss
 (table from run_eval.py goes here once built)
 
 ## Limitations
+Marker numbers containing "<" or ">" are not supported
 (be specific: synthetic data, small case set, reference ranges from public sources, no clinical validation)
