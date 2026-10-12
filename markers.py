@@ -80,16 +80,26 @@ def normalize_name(name):
 
 
 def find_marker(name):
-    return ALIAS_TO_MARKER.get(normalize_name(name))  # get the marker name
+    return ALIAS_TO_MARKER.get(normalize_name(name))  # get the marker name associated with the alias
 
 
-def parse_value(raw):
+def parse_value(raw): # parse the value from the raw string
     try:
-        value = float(raw.split().replace(",", "."))
+        value = float(raw.split().replace(",", ".")) # replace comma with dot for decimal conversion to avoid errors in float conversion
     except ValueError:
         return None
     return value if math.isfinite(value) else None
 
+def plausible_range(marker, value):
+    if marker not in MARKERS:
+        return False
+    min_val, max_val = MARKERS[marker]["plausible_range"]
+    return min_val <= value <= max_val    
+
+def units(marker):
+    if marker not in MARKERS:
+        return None
+    return MARKERS[marker]["canonical_unit"]
 
 # if __name__ == "__main__":
 #     print(normalized_name(input("Marker: ")))
