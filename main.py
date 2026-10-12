@@ -2,11 +2,11 @@ import csv
 from schema import validate_panel
 
 def load_rows(path):
-    with open(path, newline="", encoding="utf-8") as f:
+    with open(path, newline="", encoding="utf-8") as f: # open the CSV file with UTF-8 encoding to handle special characters
         reader = csv.DictReader(f)
         return list(reader)
 
-def main():
+def main(): # main function to load and validate the blood panel data
     rows = load_rows("data/panel_001.csv")
     accepted, rejected = validate_panel(rows)
     
