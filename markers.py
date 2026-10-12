@@ -85,6 +85,3 @@ def units(marker):   # return the canonical unit for the marker
     if marker not in MARKERS:
         return None
     return MARKERS[marker]["canonical_unit"]
-
-# if __name__ == "__main__":
-#     print(normalized_name(input("Marker: ")))
