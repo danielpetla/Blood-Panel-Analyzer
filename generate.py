@@ -105,10 +105,10 @@ def panel_value(rng, value):
     return text.replace(".", ",") if rng.random() < 0.5 else text # randomly replace decimal point with comma to simulate messy input
 
 def panel_unit(rng, marker):
-    unit = units(marker) # get the canonical unit for the marker
+    unit = MARKERS[marker]["canonical_unit"] # get the canonical unit for the marker
     return rng.choice([unit, unit.upper(), f"{unit} "]) # randomly change the case of the unit and add a space after it
 
-def make_row(rng, marker, value):
+def makes_row(rng, marker, value):
     """Make a single row for a CSV panel, with random alias, value formatting, and unit."""
     return {
         "marker": panel_name(rng, marker),
