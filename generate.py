@@ -14,7 +14,7 @@ from pathlib import Path
 
 from markers import MARKERS, units
 
-OUT_DIR = Path(__file__).parent / "data"/ # path to the output folder
+OUT_DIR = Path(__file__).parent / "data" / "panels" # path to the output folder
 
 STATUSES = ("flagged", "not_flagged", "insufficient_data") # possible statuses for the markers
 
