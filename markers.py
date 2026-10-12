@@ -1,5 +1,3 @@
-import math
-
 MARKERS = {
     "glucose_fasting": {
         "canonical_unit": "mg/dl",  # standard unit for the marker
@@ -83,20 +81,7 @@ def find_marker(name):
     return ALIAS_TO_MARKER.get(normalize_name(name))  # get the marker name associated with the alias
 
 
-def parse_value(raw): # parse the value from the raw string
-    try:
-        value = float(raw.split().replace(",", ".")) # replace comma with dot for decimal conversion to avoid errors in float conversion
-    except ValueError:
-        return None
-    return value if math.isfinite(value) else None
-
-def plausible_range(marker, value):
-    if marker not in MARKERS:
-        return False
-    min_val, max_val = MARKERS[marker]["plausible_range"]
-    return min_val <= value <= max_val    
-
-def units(marker):
+def units(marker):   # return the canonical unit for the marker
     if marker not in MARKERS:
         return None
     return MARKERS[marker]["canonical_unit"]
