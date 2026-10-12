@@ -1,9 +1,22 @@
-from pathlib import Path
-import random
-import markers
-import schema
+import csv
+from schema import validate_panel
 
+def load_rows(path):
+    with open(path, newline="", encoding="utf-8") as f:
+        reader = csv.DictReader(f)
+        return list(reader)
 
-data_dir = Path(__file__).resolve().parent / "data" # path to the data folder
+def main():
+    rows = load_rows("data/panel_001.csv")
+    accepted, rejected = validate_panel(rows)
+    
+    print(f"Accepted: {len(accepted)}")
+    for result in accepted:
+        print(f"  {result.marker}: {result.value} {result.unit}")
 
-patient_file = [f for f in data_dir.glob("*.csv") if f.is_file()] # list of all csv files in the data folder
+    print(f"Rejected: {len(rejected)}")
+    for row, reason in rejected:
+        print(f"  {row} -> {reason}")
+
+if __name__ == "__main__":
+    main()
