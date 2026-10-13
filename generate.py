@@ -197,7 +197,7 @@ def generate(n_panels=30, seed=42):
     ground_truth = {} # dictionary to hold the ground truth labels for each panel
     for i in range(1, n_panels +1):
         panel_id = f"panel_{i:03d}" # create a panel ID like "panel_001"
-        rows, labels, rejections = make_panel(rng)
+        rows, labels, rejections = make_panel(rng) # type: ignore
 
         with open(OUT_DIR / f"{panel_id}.csv", "w", newline="", encoding="utf-8") as f: # write the panel to a CSV file
             writer = csv.DictWriter(f, fieldnames=["marker", "value", "unit"])
