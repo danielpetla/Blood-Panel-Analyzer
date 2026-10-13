@@ -129,15 +129,96 @@ def corrupt_row(rng, row, kind):
         row["value"] = "9999.0" # replace the value with an implausible number
     return row
 
-def make_row(rng):
-    """Make a single row for a CSV panel, with random alias, value formatting, and unit."""
-    marker = rng.choice(list(MARKERS.keys())) # choose a random marker
-    value = sample(rng, *MARKERS[marker]["plausible_range"]) # sample a plausible value for the marker
+def make_unknown_row(rng):
+    """Make a row for a marker that isn't in any pattern, to test the validator."""
     return {
-        "marker": panel_name(rng, marker),
-        "value": panel_value(rng, value),
-        "unit": panel_unit(rng, marker),
+        "marker": rng.choice(["Sodium", "Potassium", "Calcium", "Hemoglobin"]),
+        "value": "1.0",
+        "unit": "mg/dl",
     }
-
 # ------- one panel ------------
 
+def make_panel(rng):
+    """Make a single panel for a given pattern and status, with some filler markers."""
+    values = {}
+    intended = {}
+    
+    for name, pattern in PATTERNS.items():
+        status = rng.choice(STATUSES) # randomly choose a status for each pattern
+        intended[name] = status
+        
+        if status == "insufficient_data":
+            keep = rng.sample(pattern["requires"],
+                                k=rng.randint(0, len(pattern["requires"]) - 1))
+            ranges = pattern[rng.choice(["flagged", "not_flagged"])]
+
+            for marker in keep:
+                low, high = ranges[marker]
+                values[marker] = sample(rng, low, high) # sample a value for the marker
+
+        else:
+            for marker, (low,high) in pattern[status].items():
+                values[marker] = sample(rng, low, high) # sample a value for the marker
+
+        for marker, (low, high) in FILLER_RANGES.items():
+            if rng.random() < 0.6: # randomly decide whether to include this filler marker
+                values[marker] = sample(rng, low, high) # sample a value for the filler marker
+        
+        # Sanity check: make sure we have at least one marker for the pattern, otherwise the panel is invalid
+        assert label(values) == intended, (label(values), values)
+
+        rows = {marker: makes_row(rng, marker, value) for marker, value in values.items()} # make rows for each marker
+        valid_values = dict(values) # copy the values to valid_rows
+        rejected_rows = []
+
+        # Corrupt a few rows to test the validator
+        if rng.random() < 0.4: # 40% chance to corrupt a row
+            marker = rng.choice(sorted(rows)) # choose a random marker to corrupt
+            kind = rng.choice(CORRUPTIONS) # choose a random corruption type
+            rows[marker] = corrupt_row(rng, rows[marker], kind) # corrupt the row
+            del valid_values[marker] # remove the marker from valid_values since it's corrupted
+            rejected_rows.append({"marker": marker, "corruption": kind}) # add the corrupted row to rejected_rows
+
+        out_rows = list(rows.values()) # convert the rows dict to a list of rows
+        
+        # Sometimes add a row for a marker that isn't in the pattern, to test the validator
+        if rng.random() < 0.3: # 30% chance to add a filler marker
+            out_rows.append(make_unknown_row(rng)) # add a random unknown row
+            rejected_rows.append({"marker": "unknown", "corruption": "not_in_pattern"}) # add the unknown row to rejected_rows
+
+        rng.shuffle(out_rows) # shuffle the rows to simulate messy input
+        return out_rows, label(valid_values), rejected_rows # return the rows, the ground truth labels, and the rejected rows
+    
+def generate(n_panels=30, seed=42):
+    """Generate a number of synthetic panels, and write them to CSV files with a ground-truth JSON file."""
+    rng = random.Random(seed) # create a random number generator with a fixed seed for reproducibility
+    OUT_DIR.mkdir(parents=True, exist_ok=True) # create the output directory if it doesn't exist
+
+    ground_truth = {} # dictionary to hold the ground truth labels for each panel
+    for i in range(1, n_panels +1):
+        panel_id = f"panel_{i:03d}" # create a panel ID like "panel_001"
+        rows, labels, rejections = make_panel(rng)
+
+        with open(OUT_DIR / f"{panel_id}.csv", "w", newline="", encoding="utf-8") as f: # write the panel to a CSV file
+            writer = csv.DictWriter(f, fieldnames=["marker", "value", "unit"])
+            writer.writeheader()
+            writer.writerows(rows)
+            
+        ground_truth[panel_id] = {
+            "patterns": labels, # the ground truth labels for the patterns
+            "expected_rejections": rejections, # the expected rejected rows
+        }
+    
+    with open(OUT_DIR / "ground_truth.json", "w", encoding="utf-8") as f: # write the ground truth to a JSON file
+        json.dump(ground_truth, f, indent=2, ensure_ascii=False) # ensure_ascii=False to allow special characters in the JSON file+
+    
+    return ground_truth
+
+    
+if __name__ == "__main__":
+    result  = generate()
+    print(f"Generated {len(result)} panels in {OUT_DIR}. Ground truth written to ground_truth.json.")
+
+     
+
+        

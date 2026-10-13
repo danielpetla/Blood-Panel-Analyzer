@@ -7,7 +7,7 @@ def load_rows(path):
         return list(reader)
 
 def main(): # main function to load and validate the blood panel data
-    rows = load_rows("data/panel_001.csv")
+    rows = load_rows("data/panels/panel_001.csv")
     accepted, rejected = validate_panel(rows)
     
     print(f"Accepted: {len(accepted)}")
