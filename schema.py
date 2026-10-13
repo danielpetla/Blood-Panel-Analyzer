@@ -1,6 +1,7 @@
 import math
 from markers import MARKERS, find_marker, units
 from dataclasses import dataclass
+from collections import defaultdict
 
 class ValidationError(ValueError):  # ValidationError is a subclass of ValueError, which is raised when a raw row cannot become a valid LabResult.
     """Raised when a raw row cannot become a valid LabResult."""
@@ -34,7 +35,7 @@ def build_result(name,raw_value, raw_unit): # build a LabResult from the raw inp
 
     # unit is check before range so that we can raise a more specific error if the unit is wrong
     # as a unit problem, not as an "implausible value" problem. This is important because the unit problem is a data quality problem, while the implausible value problem is a biological problem.
-    unit = raw_unit.strip().lower()
+    unit = (raw_unit or "").strip().lower()
     canonical_unit = units(marker)
 
     if unit != canonical_unit:
@@ -46,10 +47,25 @@ def build_result(name,raw_value, raw_unit): # build a LabResult from the raw inp
 
 def validate_panel(rows): # validate a panel of lab results
     """Split raw rows into accepted LabResults and (row, reason) rejections."""
-    accepted, rejected = [], []
+    candidates, rejected = [], []
     for row in rows:
         try:
-            accepted.append(build_result(row.get("name", ""), row.get("value", ""), row.get("unit", "")))
+            result = build_result(
+                row.get("marker", ""), row.get("value", ""), row.get("unit", "")
+            )
+            candidates.append((row, result))
         except ValidationError as e:
             rejected.append((row, str(e)))
+    
+    by_marker = defaultdict(list)
+    for row, result in candidates:
+        by_marker[result.marker].append((row, result))
+    
+    accepted = []
+    for marker, group in by_marker.items():
+        if len(group) == 1:
+            accepted.append(group[0][1]) # only one result for this marker, accept it
+        else:
+            for row, _ in group:
+                rejected.append((row, f"Duplicate marker: {marker} appears {len(group)} times"))
     return accepted, rejected

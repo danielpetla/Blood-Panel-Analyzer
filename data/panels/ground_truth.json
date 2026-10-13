@@ -1,0 +1,360 @@
+{
+  "panel_001": {
+    "patterns": {
+      "dysglycemia": "insufficient_data",
+      "atherogenic_dyslipidemia": "insufficient_data",
+      "iron_deficiency": "flagged"
+    },
+    "expected_rejections": []
+  },
+  "panel_002": {
+    "patterns": {
+      "dysglycemia": "insufficient_data",
+      "atherogenic_dyslipidemia": "flagged",
+      "iron_deficiency": "insufficient_data"
+    },
+    "expected_rejections": [
+      {
+        "marker": "unknown",
+        "corruption": "not_in_pattern"
+      }
+    ]
+  },
+  "panel_003": {
+    "patterns": {
+      "dysglycemia": "insufficient_data",
+      "atherogenic_dyslipidemia": "not_flagged",
+      "iron_deficiency": "flagged"
+    },
+    "expected_rejections": [
+      {
+        "marker": "glucose_fasting",
+        "corruption": "duplicate"
+      }
+    ]
+  },
+  "panel_004": {
+    "patterns": {
+      "dysglycemia": "not_flagged",
+      "atherogenic_dyslipidemia": "insufficient_data",
+      "iron_deficiency": "not_flagged"
+    },
+    "expected_rejections": []
+  },
+  "panel_005": {
+    "patterns": {
+      "dysglycemia": "insufficient_data",
+      "atherogenic_dyslipidemia": "not_flagged",
+      "iron_deficiency": "flagged"
+    },
+    "expected_rejections": []
+  },
+  "panel_006": {
+    "patterns": {
+      "dysglycemia": "not_flagged",
+      "atherogenic_dyslipidemia": "not_flagged",
+      "iron_deficiency": "insufficient_data"
+    },
+    "expected_rejections": []
+  },
+  "panel_007": {
+    "patterns": {
+      "dysglycemia": "insufficient_data",
+      "atherogenic_dyslipidemia": "not_flagged",
+      "iron_deficiency": "flagged"
+    },
+    "expected_rejections": [
+      {
+        "marker": "hba1c",
+        "corruption": "duplicate"
+      }
+    ]
+  },
+  "panel_008": {
+    "patterns": {
+      "dysglycemia": "flagged",
+      "atherogenic_dyslipidemia": "insufficient_data",
+      "iron_deficiency": "flagged"
+    },
+    "expected_rejections": [
+      {
+        "marker": "triglycerides",
+        "corruption": "duplicate"
+      }
+    ]
+  },
+  "panel_009": {
+    "patterns": {
+      "dysglycemia": "not_flagged",
+      "atherogenic_dyslipidemia": "not_flagged",
+      "iron_deficiency": "insufficient_data"
+    },
+    "expected_rejections": []
+  },
+  "panel_010": {
+    "patterns": {
+      "dysglycemia": "flagged",
+      "atherogenic_dyslipidemia": "insufficient_data",
+      "iron_deficiency": "not_flagged"
+    },
+    "expected_rejections": []
+  },
+  "panel_011": {
+    "patterns": {
+      "dysglycemia": "insufficient_data",
+      "atherogenic_dyslipidemia": "insufficient_data",
+      "iron_deficiency": "insufficient_data"
+    },
+    "expected_rejections": []
+  },
+  "panel_012": {
+    "patterns": {
+      "dysglycemia": "not_flagged",
+      "atherogenic_dyslipidemia": "flagged",
+      "iron_deficiency": "flagged"
+    },
+    "expected_rejections": []
+  },
+  "panel_013": {
+    "patterns": {
+      "dysglycemia": "not_flagged",
+      "atherogenic_dyslipidemia": "not_flagged",
+      "iron_deficiency": "flagged"
+    },
+    "expected_rejections": []
+  },
+  "panel_014": {
+    "patterns": {
+      "dysglycemia": "insufficient_data",
+      "atherogenic_dyslipidemia": "insufficient_data",
+      "iron_deficiency": "insufficient_data"
+    },
+    "expected_rejections": [
+      {
+        "marker": "triglycerides",
+        "corruption": "implausible"
+      }
+    ]
+  },
+  "panel_015": {
+    "patterns": {
+      "dysglycemia": "flagged",
+      "atherogenic_dyslipidemia": "insufficient_data",
+      "iron_deficiency": "insufficient_data"
+    },
+    "expected_rejections": [
+      {
+        "marker": "triglycerides",
+        "corruption": "implausible"
+      }
+    ]
+  },
+  "panel_016": {
+    "patterns": {
+      "dysglycemia": "not_flagged",
+      "atherogenic_dyslipidemia": "insufficient_data",
+      "iron_deficiency": "insufficient_data"
+    },
+    "expected_rejections": [
+      {
+        "marker": "triglycerides",
+        "corruption": "missing_unit"
+      },
+      {
+        "marker": "unknown",
+        "corruption": "not_in_pattern"
+      }
+    ]
+  },
+  "panel_017": {
+    "patterns": {
+      "dysglycemia": "insufficient_data",
+      "atherogenic_dyslipidemia": "not_flagged",
+      "iron_deficiency": "not_flagged"
+    },
+    "expected_rejections": []
+  },
+  "panel_018": {
+    "patterns": {
+      "dysglycemia": "not_flagged",
+      "atherogenic_dyslipidemia": "insufficient_data",
+      "iron_deficiency": "not_flagged"
+    },
+    "expected_rejections": [
+      {
+        "marker": "triglycerides",
+        "corruption": "implausible"
+      },
+      {
+        "marker": "unknown",
+        "corruption": "not_in_pattern"
+      }
+    ]
+  },
+  "panel_019": {
+    "patterns": {
+      "dysglycemia": "not_flagged",
+      "atherogenic_dyslipidemia": "not_flagged",
+      "iron_deficiency": "insufficient_data"
+    },
+    "expected_rejections": [
+      {
+        "marker": "tsh",
+        "corruption": "wrong_unit"
+      },
+      {
+        "marker": "unknown",
+        "corruption": "not_in_pattern"
+      }
+    ]
+  },
+  "panel_020": {
+    "patterns": {
+      "dysglycemia": "insufficient_data",
+      "atherogenic_dyslipidemia": "insufficient_data",
+      "iron_deficiency": "flagged"
+    },
+    "expected_rejections": [
+      {
+        "marker": "glucose_fasting",
+        "corruption": "not_a_number"
+      }
+    ]
+  },
+  "panel_021": {
+    "patterns": {
+      "dysglycemia": "flagged",
+      "atherogenic_dyslipidemia": "flagged",
+      "iron_deficiency": "not_flagged"
+    },
+    "expected_rejections": []
+  },
+  "panel_022": {
+    "patterns": {
+      "dysglycemia": "flagged",
+      "atherogenic_dyslipidemia": "insufficient_data",
+      "iron_deficiency": "insufficient_data"
+    },
+    "expected_rejections": [
+      {
+        "marker": "vitamin_d",
+        "corruption": "wrong_unit"
+      },
+      {
+        "marker": "ferritin",
+        "corruption": "duplicate"
+      }
+    ]
+  },
+  "panel_023": {
+    "patterns": {
+      "dysglycemia": "insufficient_data",
+      "atherogenic_dyslipidemia": "insufficient_data",
+      "iron_deficiency": "not_flagged"
+    },
+    "expected_rejections": [
+      {
+        "marker": "hdl",
+        "corruption": "missing_unit"
+      }
+    ]
+  },
+  "panel_024": {
+    "patterns": {
+      "dysglycemia": "flagged",
+      "atherogenic_dyslipidemia": "insufficient_data",
+      "iron_deficiency": "flagged"
+    },
+    "expected_rejections": [
+      {
+        "marker": "triglycerides",
+        "corruption": "missing_unit"
+      }
+    ]
+  },
+  "panel_025": {
+    "patterns": {
+      "dysglycemia": "insufficient_data",
+      "atherogenic_dyslipidemia": "insufficient_data",
+      "iron_deficiency": "insufficient_data"
+    },
+    "expected_rejections": [
+      {
+        "marker": "triglycerides",
+        "corruption": "implausible"
+      }
+    ]
+  },
+  "panel_026": {
+    "patterns": {
+      "dysglycemia": "not_flagged",
+      "atherogenic_dyslipidemia": "insufficient_data",
+      "iron_deficiency": "insufficient_data"
+    },
+    "expected_rejections": [
+      {
+        "marker": "creatinine",
+        "corruption": "missing_unit"
+      },
+      {
+        "marker": "tsh",
+        "corruption": "duplicate"
+      }
+    ]
+  },
+  "panel_027": {
+    "patterns": {
+      "dysglycemia": "insufficient_data",
+      "atherogenic_dyslipidemia": "flagged",
+      "iron_deficiency": "not_flagged"
+    },
+    "expected_rejections": [
+      {
+        "marker": "hba1c",
+        "corruption": "wrong_unit"
+      }
+    ]
+  },
+  "panel_028": {
+    "patterns": {
+      "dysglycemia": "flagged",
+      "atherogenic_dyslipidemia": "insufficient_data",
+      "iron_deficiency": "insufficient_data"
+    },
+    "expected_rejections": [
+      {
+        "marker": "hdl",
+        "corruption": "not_a_number"
+      },
+      {
+        "marker": "hscrp",
+        "corruption": "duplicate"
+      },
+      {
+        "marker": "unknown",
+        "corruption": "not_in_pattern"
+      }
+    ]
+  },
+  "panel_029": {
+    "patterns": {
+      "dysglycemia": "not_flagged",
+      "atherogenic_dyslipidemia": "flagged",
+      "iron_deficiency": "insufficient_data"
+    },
+    "expected_rejections": []
+  },
+  "panel_030": {
+    "patterns": {
+      "dysglycemia": "not_flagged",
+      "atherogenic_dyslipidemia": "insufficient_data",
+      "iron_deficiency": "insufficient_data"
+    },
+    "expected_rejections": [
+      {
+        "marker": "unknown",
+        "corruption": "not_in_pattern"
+      }
+    ]
+  }
+}

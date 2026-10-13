@@ -23,7 +23,7 @@ STATUSES = ("flagged", "not_flagged", "insufficient_data") # possible statuses f
 
 PATTERNS = {
     "dysglycemia": {
-        "markers": ("glucose_fasting", "hba1c"),
+        "requires": ("glucose_fasting", "hba1c"),
         "rule": lambda v: v["glucose_fasting"] >= 100 and v["hba1c"] >= 5.7,
         "flagged": {
            "glucose_fasting": (100, 125),
@@ -91,7 +91,7 @@ def label(values):
     return truth
 
 def sample(rng, low, high): # sample a random value in the range, rounded to 1 decimal place
-    return round(random.uniform(low, high), 1)
+    return round(rng.uniform(low, high), 1)
 
 # --------- turning clean values into realistic/messy csv panels ---------
 
@@ -122,7 +122,8 @@ def corrupt_row(rng, row, kind):
     if kind == "missing_unit":
         row["unit"] = rng.choice(["", " ", None]) # remove the unit
     elif kind == "wrong_unit":
-        row["unit"] = rng.choice(["mg/l", "mmol/l", "g/dl"]) # replace the unit with a wrong one
+        canonical = units(marker)
+        row["unit"] = rng.choice([u for u in ("mg/l", "mmol/l", "g/dl", "ng/ml") if u != canonical])
     elif kind == "not_a_number":
         row["value"] = rng.choice(["abc", "NaN", "", "<0.5", ]) # replace the value with a non-numeric string
     else: # implausible
@@ -160,34 +161,43 @@ def make_panel(rng):
             for marker, (low,high) in pattern[status].items():
                 values[marker] = sample(rng, low, high) # sample a value for the marker
 
-        for marker, (low, high) in FILLER_RANGES.items():
-            if rng.random() < 0.6: # randomly decide whether to include this filler marker
-                values[marker] = sample(rng, low, high) # sample a value for the filler marker
+    for marker, (low, high) in FILLER_RANGES.items():
+        if rng.random() < 0.6: # randomly decide whether to include this filler marker
+            values[marker] = sample(rng, low, high) # sample a value for the filler marker
         
-        # Sanity check: make sure we have at least one marker for the pattern, otherwise the panel is invalid
-        assert label(values) == intended, (label(values), values)
+    # Sanity check: make sure we have at least one marker for the pattern, otherwise the panel is invalid
+    assert label(values) == intended, (label(values), values)
 
-        rows = {marker: makes_row(rng, marker, value) for marker, value in values.items()} # make rows for each marker
-        valid_values = dict(values) # copy the values to valid_rows
-        rejected_rows = []
+    rows = {marker: makes_row(rng, marker, value) for marker, value in values.items()} # make rows for each marker
+    valid_values = dict(values) # copy the values to valid_rows
+    rejected_rows = []
 
-        # Corrupt a few rows to test the validator
-        if rng.random() < 0.4: # 40% chance to corrupt a row
-            marker = rng.choice(sorted(rows)) # choose a random marker to corrupt
-            kind = rng.choice(CORRUPTIONS) # choose a random corruption type
-            rows[marker] = corrupt_row(rng, rows[marker], kind) # corrupt the row
-            del valid_values[marker] # remove the marker from valid_values since it's corrupted
-            rejected_rows.append({"marker": marker, "corruption": kind}) # add the corrupted row to rejected_rows
+    # Corrupt a few rows to test the validator
+    if rng.random() < 0.4: # 40% chance to corrupt a row
+        marker = rng.choice(sorted(rows)) # choose a random marker to corrupt
+        kind = rng.choice(CORRUPTIONS) # choose a random corruption type
+        rows[marker] = corrupt_row(rng, rows[marker], kind) 
+        del valid_values[marker] # remove the marker from valid_values since it's corrupted
+        rejected_rows.append({"marker": marker, "corruption": kind}) 
 
-        out_rows = list(rows.values()) # convert the rows dict to a list of rows
-        
-        # Sometimes add a row for a marker that isn't in the pattern, to test the validator
-        if rng.random() < 0.3: # 30% chance to add a filler marker
-            out_rows.append(make_unknown_row(rng)) # add a random unknown row
-            rejected_rows.append({"marker": "unknown", "corruption": "not_in_pattern"}) # add the unknown row to rejected_rows
+    out_rows = list(rows.values()) # convert the rows dict to a list of rows
 
-        rng.shuffle(out_rows) # shuffle the rows to simulate messy input
-        return out_rows, label(valid_values), rejected_rows # return the rows, the ground truth labels, and the rejected rows
+    #duplicate a marker that is still valid (25%)
+    if valid_values and rng.random() < 0.25:
+        marker = rng.choice(sorted(valid_values))        # NOT from rows: must still be valid
+        low, high = MARKERS[marker]["plausible_range"]
+        out_rows.append(makes_row(rng, marker, sample(rng, low, high)))
+        del valid_values[marker]                         # both rows get rejected
+        rejected_rows.append({"marker": marker, "corruption": "duplicate"})
+
+    
+    # Sometimes add a row for a marker that isn't in the pattern, to test the validator
+    if rng.random() < 0.3: # 30% chance to add a filler marker
+        out_rows.append(make_unknown_row(rng)) # add a random unknown row
+        rejected_rows.append({"marker": "unknown", "corruption": "not_in_pattern"}) 
+
+    rng.shuffle(out_rows) # shuffle the rows to simulate messy input
+    return out_rows, label(valid_values), rejected_rows # return the rows, the ground truth labels, and the rejected rows
     
 def generate(n_panels=30, seed=42):
     """Generate a number of synthetic panels, and write them to CSV files with a ground-truth JSON file."""
