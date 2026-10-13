@@ -1,10 +1,15 @@
-from anthropic import Anthropic
+from typing import Literal
 
-MODEL = "claude-sonnet-5-5"
+from google import genai
+from google.genai import types
+from pydantic import BaseModel, ValidationError
+
+MODEL = "gemini-3.8-flash"
 
 PATTERNS = ("dysglycemia", "atherogenic_dyslipidemia", "iron_deficiency")
-STATUSES = ("flagged", "not_flagged", "insufficient_data")
 
+# Thresholds are written out here on purpose. Don't import them from
+# generate.py, or the analyzer would share the answer key it is graded on.
 SYSTEM_PROMPT = """You analyze blood panel results for a demo project.
 Synthetic data only. The rules below are simplified demo rules, not clinical advice.
 
@@ -24,63 +29,50 @@ For each pattern, choose exactly one status:
 
 Use only the results provided. Give a short reason for each pattern."""
 
-TOOL = {
-    "name": "report_patterns",
-    "description": "Report the status of every pattern.",
-    "input_schema": {
-        "type": "object",
-        "properties": {
-            name: {
-                "type": "object",
-                "properties": {
-                    "status": {"type": "string", "enum": list(STATUSES)},
-                    "reason": {"type": "string"},
-                },
-                "required": ["status", "reason"],
-            }
-            for name in PATTERNS
-        },
-        "required": list(PATTERNS),
-    },
-}
+
+class PatternResult(BaseModel):
+    status: Literal["flagged", "not_flagged", "insufficient_data"]
+    reason: str
+
+
+class PanelResult(BaseModel):
+    dysglycemia: PatternResult
+    atherogenic_dyslipidemia: PatternResult
+    iron_deficiency: PatternResult
+
 
 class LLMOutputError(ValueError):
-    """Raised when the LLM output is not valid JSON or does not match the expected schema."""
+    """Raised when the model's answer is missing or malformed."""
+
 
 def format_results(accepted):
     if not accepted:
-        return "No results were accepted."
+        return "(no valid results)"
     return "\n".join(f"{r.marker}: {r.value} {r.unit}" for r in accepted)
 
-def parse_response(response):
-    block = next((b for b in response.content if b.type == "tool_use"), None)
-    if block is None:
-        raise LLMOutputError("No tool call in response")
 
-    data = block.input
-    out = {}
-    for name in PATTERNS:
-        entry = data.get(name)
-        if not isinstance(entry, dict):
-            raise LLMOutputError(f"Missing pattern: {name}")
-        status = entry.get("status")
-        if status not in STATUSES:
-            raise LLMOutputError(f"Bad status for {name}: {status!r}")
-        out[name] = {"status": status, "reason": str(entry.get("reason", ""))}
-    return out
+def parse_text(text):
+    """Validate the model's JSON text and return {pattern: {"status", "reason"}}."""
+    if not text:
+        raise LLMOutputError("Empty response")
+    try:
+        parsed = PanelResult.model_validate_json(text)
+    except ValidationError as e:
+        raise LLMOutputError(f"Malformed output: {e}") from e
+    return {name: getattr(parsed, name).model_dump() for name in PATTERNS}
 
-def analyze(accepted, client=None):
-    """Return {pattern: {"status": ..., "reason": ...}} for a list of LabResults"""
-    client = client or Anthropic()  # reads Anthropic_API_KEY
-    response = client.messages.create(
-        model=MODEL,
-        max_tokens=1000,
-        system=SYSTEM_PROMPT,
-        tools=[TOOL],
-        tool_choice={"type": "tool", "name": "report_patterns"},
-        messages=[{
-            "role": "user",
-            "content": f"Panel results: \n{format_results(accepted)}",
-        }]
+
+def analyze(accepted, client=None, model=MODEL):
+    """Return {pattern: {"status": ..., "reason": ...}} for a list of LabResults."""
+    client = client or genai.Client()   # reads GEMINI_API_KEY (or GOOGLE_API_KEY)
+    response = client.models.generate_content(
+        model=model,
+        contents=f"Panel results:\n{format_results(accepted)}",
+        config=types.GenerateContentConfig(
+            system_instruction=SYSTEM_PROMPT,
+            temperature=0,
+            response_mime_type="application/json",
+            response_schema=PanelResult,
+        ),
     )
-    return parse_response(response)
+    return parse_text(response.text)
