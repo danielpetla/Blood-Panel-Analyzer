@@ -29,27 +29,22 @@ For each pattern, choose exactly one status:
 
 Use only the results provided. Give a short reason for each pattern."""
 
-
 class PatternResult(BaseModel):
     status: Literal["flagged", "not_flagged", "insufficient_data"]
     reason: str
-
 
 class PanelResult(BaseModel):
     dysglycemia: PatternResult
     atherogenic_dyslipidemia: PatternResult
     iron_deficiency: PatternResult
 
-
 class LLMOutputError(ValueError):
     """Raised when the model's answer is missing or malformed."""
-
 
 def format_results(accepted):
     if not accepted:
         return "(no valid results)"
     return "\n".join(f"{r.marker}: {r.value} {r.unit}" for r in accepted)
-
 
 def parse_text(text):
     """Validate the model's JSON text and return {pattern: {"status", "reason"}}."""
@@ -60,7 +55,6 @@ def parse_text(text):
     except ValidationError as e:
         raise LLMOutputError(f"Malformed output: {e}") from e
     return {name: getattr(parsed, name).model_dump() for name in PATTERNS}
-
 
 def analyze(accepted, client=None, model=MODEL):
     """Return {pattern: {"status": ..., "reason": ...}} for a list of LabResults."""
