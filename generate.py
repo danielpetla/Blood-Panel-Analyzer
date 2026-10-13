@@ -228,7 +228,3 @@ def generate(n_panels=30, seed=42):
 if __name__ == "__main__":
     result  = generate()
     print(f"Generated {len(result)} panels in {OUT_DIR}. Ground truth written to ground_truth.json.")
-
-     
-
-        
