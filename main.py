@@ -1,7 +1,9 @@
 import csv
+import sys
 from pathlib import Path
 from schema import validate_panel
-from llm import analyze, LLMOutputError
+from llm import analyze
+from errors import LLMOutputError
 
 PANELS_DIR = Path(__file__).parent / "data" / "panels" # path to the folder containing the CSV files
 def load_rows(path):
@@ -9,7 +11,8 @@ def load_rows(path):
         return list(csv.DictReader(f))
 
 def main(): # main function to load and validate the blood panel data
-    rows = load_rows(PANELS_DIR / "panel_001.csv")
+    panel_id = sys.argv[1] if len(sys.argv) > 1 else "panel_001"
+    rows = load_rows(PANELS_DIR / f"{panel_id}.csv")
     accepted, rejected = validate_panel(rows)
     
     print(f"Accepted: {len(accepted)}")
