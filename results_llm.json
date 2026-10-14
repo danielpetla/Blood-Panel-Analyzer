@@ -1,0 +1,10 @@
+{
+  "panel_001": "api_error",
+  "panel_002": {
+    "dysglycemia": "insufficient_data",
+    "atherogenic_dyslipidemia": "flagged",
+    "iron_deficiency": "insufficient_data"
+  },
+  "panel_003": "api_error",
+  "panel_004": "api_error"
+}
