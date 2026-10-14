@@ -105,8 +105,7 @@ False flags: 0
 Missed flags: 0
 ```
 
-**Gemini** (`python evaluate.py --mode llm`): _results pending. Paste the report here, with
-the model name and date of the run._
+**Gemini** (`python evaluate.py --mode llm`): _results pending
 
 ## Limitations
 
