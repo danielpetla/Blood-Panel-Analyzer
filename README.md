@@ -105,7 +105,9 @@ False flags: 0
 Missed flags: 0
 ```
 
-**Gemini** (`python evaluate.py --mode llm`): _results pending
+**Gemini** (`python evaluate.py --mode llm`): a partial run (9 of 30 panels answered, the rest stopped by
+API errors: 503 overloaded and 429 quota) got all 27 decisions correct.
+A full run is pending. 
 
 ## Limitations
 

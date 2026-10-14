@@ -1,10 +1,49 @@
 {
-  "panel_001": "api_error",
+  "panel_001": {
+    "dysglycemia": "insufficient_data",
+    "atherogenic_dyslipidemia": "insufficient_data",
+    "iron_deficiency": "flagged"
+  },
   "panel_002": {
     "dysglycemia": "insufficient_data",
     "atherogenic_dyslipidemia": "flagged",
     "iron_deficiency": "insufficient_data"
   },
-  "panel_003": "api_error",
-  "panel_004": "api_error"
+  "panel_003": {
+    "dysglycemia": "insufficient_data",
+    "atherogenic_dyslipidemia": "not_flagged",
+    "iron_deficiency": "flagged"
+  },
+  "panel_004": {
+    "dysglycemia": "not_flagged",
+    "atherogenic_dyslipidemia": "insufficient_data",
+    "iron_deficiency": "not_flagged"
+  },
+  "panel_005": {
+    "dysglycemia": "insufficient_data",
+    "atherogenic_dyslipidemia": "not_flagged",
+    "iron_deficiency": "flagged"
+  },
+  "panel_006": {
+    "dysglycemia": "not_flagged",
+    "atherogenic_dyslipidemia": "not_flagged",
+    "iron_deficiency": "insufficient_data"
+  },
+  "panel_007": {
+    "dysglycemia": "insufficient_data",
+    "atherogenic_dyslipidemia": "not_flagged",
+    "iron_deficiency": "flagged"
+  },
+  "panel_008": {
+    "dysglycemia": "flagged",
+    "atherogenic_dyslipidemia": "insufficient_data",
+    "iron_deficiency": "flagged"
+  },
+  "panel_009": {
+    "dysglycemia": "not_flagged",
+    "atherogenic_dyslipidemia": "not_flagged",
+    "iron_deficiency": "insufficient_data"
+  },
+  "panel_010": "api_error",
+  "panel_011": "api_error"
 }
