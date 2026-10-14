@@ -3,6 +3,7 @@ from typing import Literal
 from google import genai
 from google.genai import types
 from pydantic import BaseModel, ValidationError
+from errors import LLMOutputError
 
 MODEL = "gemini-3.8-flash"
 
@@ -37,9 +38,6 @@ class PanelResult(BaseModel):
     dysglycemia: PatternResult
     atherogenic_dyslipidemia: PatternResult
     iron_deficiency: PatternResult
-
-class LLMOutputError(ValueError):
-    """Raised when the model's answer is missing or malformed."""
 
 def format_results(accepted):
     if not accepted:
