@@ -7,11 +7,11 @@ Output: {pattern: "flagged" | "not_flagged" | "insufficient_data"}"""
 # The rule is a lambda: a one-line function that gets a dict {marker: value}
 # and returns True when the pattern should be flagged.
 RULES = {
-    "dysglycemia": (("glucose_fasting", "hba1c"), 
+    "dysglycemia": (("glucose_fasting", "hba1c"),
                     lambda v: v["glucose_fasting"] >= 100 and v["hba1c"] >= 5.7),
-    "atherogenic_dyslipidemia": (("triglycerides", "hdl"), 
+    "atherogenic_dyslipidemia": (("triglycerides", "hdl"),
                     lambda v: v["triglycerides"] >= 150 and v["hdl"] < 40),
-    "iron_deficiency": (("ferritin",), 
+    "iron_deficiency": (("ferritin",),
                     lambda v: v["ferritin"] < 30),
 }
 # Turn the list of LabResult objects into a simple dict
