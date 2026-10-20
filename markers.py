@@ -78,7 +78,8 @@ def normalize_name(name):
 
 
 def find_marker(name):
-    return ALIAS_TO_MARKER.get(normalize_name(name))  # get the marker name associated with the alias
+    # get the marker name associated with the alias
+    return ALIAS_TO_MARKER.get(normalize_name(name))
 
 
 def units(marker):   # return the canonical unit for the marker

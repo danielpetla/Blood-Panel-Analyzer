@@ -1,5 +1,5 @@
 """Deterministic baseline: applies the threshold rules with plain Python, no LLM.
- 
+
 Input: list of LabResult (already validated by schema.py).
 Output: {pattern: "flagged" | "not_flagged" | "insufficient_data"}"""
 
@@ -10,11 +10,13 @@ RULES = {
     "dysglycemia": (("glucose_fasting", "hba1c"),
                     lambda v: v["glucose_fasting"] >= 100 and v["hba1c"] >= 5.7),
     "atherogenic_dyslipidemia": (("triglycerides", "hdl"),
-                    lambda v: v["triglycerides"] >= 150 and v["hdl"] < 40),
+                                 lambda v: v["triglycerides"] >= 150 and v["hdl"] < 40),
     "iron_deficiency": (("ferritin",),
-                    lambda v: v["ferritin"] < 30),
+                        lambda v: v["ferritin"] < 30),
 }
 # Turn the list of LabResult objects into a simple dict
+
+
 def analyze_rules(accepted):
     v = {r.marker: r.value for r in accepted}
     out = {}
