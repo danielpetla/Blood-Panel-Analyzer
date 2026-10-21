@@ -1,0 +1,15 @@
+# Virtual environment
+venv/
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Tool caches
+.pytest_cache/
+
+# macOS
+.DS_Store
+
+# Secrets
+.env
