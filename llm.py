@@ -61,7 +61,7 @@ def parse_text(text):
 
 def analyze(accepted, client=None, model=MODEL):
     """Return {pattern: {"status": ..., "reason": ...}} for a list of LabResults."""
-    client = client or genai.Client()   # reads GEMINI_API_KEY (or GOOGLE_API_KEY)
+    client = client or genai.Client()  # reads GEMINI_API_KEY (or GOOGLE_API_KEY)
     response = client.models.generate_content(
         model=model,
         contents=f"Panel results:\n{format_results(accepted)}",

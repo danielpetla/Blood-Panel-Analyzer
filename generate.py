@@ -14,8 +14,7 @@ from pathlib import Path
 
 from markers import MARKERS, units
 
-OUT_DIR = Path(__file__).parent / "data" / \
-    "panels"  # path to the output folder
+OUT_DIR = Path(__file__).parent / "data" / "panels"  # path to the output folder
 
 # possible statuses for the markers
 STATUSES = ("flagged", "not_flagged", "insufficient_data")
@@ -90,13 +89,15 @@ def label(values):
         if any(marker not in values for marker in pattern["requires"]):
             truth[name] = "insufficient_data"
         else:
-            truth[name] = "flagged" if pattern["rule"](
-                values) else "not_flagged"
+            truth[name] = "flagged" if pattern["rule"](values) else "not_flagged"
     return truth
 
 
-def sample(rng, low, high):  # sample a random value in the range, rounded to 1 decimal place
+def sample(
+    rng, low, high
+):  # sample a random value in the range, rounded to 1 decimal place
     return round(rng.uniform(low, high), 1)
+
 
 # --------- turning clean values into realistic/messy csv panels ---------
 
@@ -105,7 +106,8 @@ def panel_name(rng, marker):
     # choose a random alias for the marker
     alias = rng.choice(sorted(MARKERS[marker]["aliases"]))
     alias = rng.choice([str.lower, str.upper, str.title])(
-        alias)  # randomly change the case of the alias
+        alias
+    )  # randomly change the case of the alias
     # add random spaces before and after the alias to simulate messy input
     return rng.choice(["", " "]) + alias + rng.choice(["", " "])
 
@@ -140,10 +142,18 @@ def corrupt_row(rng, row, kind):
     elif kind == "wrong_unit":
         canonical = units(marker)
         row["unit"] = rng.choice(
-            [u for u in ("mg/l", "mmol/l", "g/dl", "ng/ml") if u != canonical])
+            [u for u in ("mg/l", "mmol/l", "g/dl", "ng/ml") if u != canonical]
+        )
     elif kind == "not_a_number":
         # replace the value with a non-numeric string
-        row["value"] = rng.choice(["abc", "NaN", "", "<0.5", ])
+        row["value"] = rng.choice(
+            [
+                "abc",
+                "NaN",
+                "",
+                "<0.5",
+            ]
+        )
     else:  # implausible
         row["value"] = "9999.0"  # replace the value with an implausible number
     return row
@@ -156,6 +166,8 @@ def make_unknown_row(rng):
         "value": "1.0",
         "unit": "mg/dl",
     }
+
+
 # ------- one panel ------------
 
 
@@ -170,8 +182,9 @@ def make_panel(rng):
         intended[name] = status
 
         if status == "insufficient_data":
-            keep = rng.sample(pattern["requires"],
-                              k=rng.randint(0, len(pattern["requires"]) - 1))
+            keep = rng.sample(
+                pattern["requires"], k=rng.randint(0, len(pattern["requires"]) - 1)
+            )
             ranges = pattern[rng.choice(["flagged", "not_flagged"])]
 
             for marker in keep:
@@ -193,8 +206,7 @@ def make_panel(rng):
     assert label(values) == intended, (label(values), values)
 
     # make rows for each marker
-    rows = {marker: makes_row(rng, marker, value)
-            for marker, value in values.items()}
+    rows = {marker: makes_row(rng, marker, value) for marker, value in values.items()}
     valid_values = dict(values)  # copy the values to valid_rows
     rejected_rows = []
 
@@ -222,8 +234,7 @@ def make_panel(rng):
     # Sometimes add a row for a marker that isn't in the pattern, to test the validator
     if rng.random() < 0.3:  # 30% chance to add a filler marker
         out_rows.append(make_unknown_row(rng))  # add a random unknown row
-        rejected_rows.append(
-            {"marker": "unknown", "corruption": "not_in_pattern"})
+        rejected_rows.append({"marker": "unknown", "corruption": "not_in_pattern"})
 
     rng.shuffle(out_rows)  # shuffle the rows to simulate messy input
     # return the rows, the ground truth labels, and the rejected rows
@@ -233,7 +244,8 @@ def make_panel(rng):
 def generate(n_panels=30, seed=42):
     """Generate a number of synthetic panels, and write them to CSV files with a ground-truth JSON file."""
     rng = random.Random(
-        seed)  # create a random number generator with a fixed seed for reproducibility
+        seed
+    )  # create a random number generator with a fixed seed for reproducibility
     # create the output directory if it doesn't exist
     OUT_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -264,4 +276,5 @@ def generate(n_panels=30, seed=42):
 if __name__ == "__main__":
     result = generate()
     print(
-        f"Generated {len(result)} panels in {OUT_DIR}. Ground truth written to ground_truth.json.")
+        f"Generated {len(result)} panels in {OUT_DIR}. Ground truth written to ground_truth.json."
+    )

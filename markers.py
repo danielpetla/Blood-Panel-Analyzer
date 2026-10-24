@@ -82,7 +82,7 @@ def find_marker(name):
     return ALIAS_TO_MARKER.get(normalize_name(name))
 
 
-def units(marker):   # return the canonical unit for the marker
+def units(marker):  # return the canonical unit for the marker
     if marker not in MARKERS:
         return None
     return MARKERS[marker]["canonical_unit"]

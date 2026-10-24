@@ -49,11 +49,11 @@ def build_result(name, raw_value, raw_unit):  # build a LabResult from the raw i
 
     if unit != canonical_unit:
         raise ValidationError(
-            f"Unexpected unit for {marker}: {unit!r}, expected: {canonical_unit!r}")
+            f"Unexpected unit for {marker}: {unit!r}, expected: {canonical_unit!r}"
+        )
 
     if not is_plausible(marker, value):
-        raise ValidationError(
-            f"Value out of plausible range for {marker}: {value}")
+        raise ValidationError(f"Value out of plausible range for {marker}: {value}")
     return LabResult(marker=marker, value=value, unit=unit)
 
 
@@ -63,8 +63,7 @@ def validate_panel(rows):  # validate a panel of lab results
     for row in rows:
         try:
             result = build_result(
-                row.get("marker", ""), row.get(
-                    "value", ""), row.get("unit", "")
+                row.get("marker", ""), row.get("value", ""), row.get("unit", "")
             )
             candidates.append((row, result))
         except ValidationError as e:
@@ -82,5 +81,6 @@ def validate_panel(rows):  # validate a panel of lab results
         else:
             for row, _ in group:
                 rejected.append(
-                    (row, f"Duplicate marker: {marker} appears {len(group)} times"))
+                    (row, f"Duplicate marker: {marker} appears {len(group)} times")
+                )
     return accepted, rejected
